@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<constant name="struts.configuration.xml.reload" value="true" />
+	<constant name="struts.ui.theme" value="simple" />
+	<constant name="struts.devMode" value="true" />
+
+	<package name="default" extends="struts-default">
+		<interceptors>
+			<interceptor name="authority"
+				class="edu.fzu.openfund.controller.AuthorityInterceptor">
+			</interceptor>
+			<interceptor-stack name="mystack">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="authority" />
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="mystack" />
+		<global-results>
+			<result name="error">/error.jsp</result>
+			<result name="login">/login.jsp</result>
+		</global-results>
+
+		<global-exception-mappings>
+			<exception-mapping exception="java.lang.Exception"
+				result="error" />
+		</global-exception-mappings>
+	</package>
+
+	<package name="fund" namespace="/fund" extends="default">
+		<global-results>
+			<result name="showfunds">/fund/showfunds.jsp</result>
+			<result name="show" type="chain">showFund</result>
+		</global-results>
+		<action name="findAllFunds" class="edu.fzu.openfund.controller.FundAction"
+			method="findAllFunds">
+			<result name="success">/fund/showfunds.jsp</result>
+		</action>
+		<action name="*Fund" class="edu.fzu.openfund.controller.FundAction"
+			method="{1}">
+			<result name="success">/fund/showfunds.jsp</result>
+			<result name="showFund" type="chain">showFund</result>
+		</action>
+		<action name="*">   <!-- 用于处理链接jsp页面请求 -->
+			<result>/fund/{1}.jsp</result>
+		</action>
+	</package>
+
+	<package name="trans" namespace="/trans" extends="default">
+		<action name="*Fund" class="edu.fzu.openfund.controller.FundTransAction"
+			method="{1}">
+			<result name="success">/trans/buyfund.jsp</result>
+		</action>
+		<action name="showHolding" class="edu.fzu.openfund.controller.FundTransAction"
+			method="showHolding">
+			<result name="success">/trans/showholding.jsp</result>
+		</action>
+		<action name="*">   <!-- 用于处理链接jsp页面请求 -->
+			<result>/trans/{1}.jsp</result>
+		</action>
+	</package>
+
+	<package name="login" namespace="/" extends="struts-default">
+		<action name="login" class="edu.fzu.openfund.controller.LoginAction"
+			method="login">   <!-- 用于处理登陆请求 -->
+			<result name="success">/index.jsp</result>
+			<result name="failure">/logfail.jsp</result>
+		</action>
+	</package>
+
+	<!-- include file="example.xml"/> -->
+
+	<!-- Add packages here -->
+	<!-- fundjson包用于处理基金模块异步请求 -->
+	<package name="fundjson" namespace="/ajax" extends="json-default">
+		<action name="findFund" class="edu.fzu.openfund.controller.FundJsonAction"
+			method="find">  <!-- 对应请求地址 /ajax/findFund.action -->
+			<result type="json">
+				<param name="root">fund</param>  <!-- 返回fund属性 -->
+			</result>
+		</action>
+		<action name="updateFund" class="edu.fzu.openfund.controller.FundJsonAction"
+			method="update">  <!-- 对应请求地址 /ajax/updateFund.action -->
+			<result type="json">
+				<param name="root">jsonResult</param> <!-- 返回jsonResult属性 -->
+			</result>
+		</action>
+
+		<action name="findPrice" class="edu.fzu.openfund.controller.FundJsonAction"
+			method="findPrice">  <!-- 对应请求地址 /ajax/findPrice.action -->
+			<result type="json">
+				<param name="root">price</param> <!-- 返回jsonResult属性 -->
+			</result>
+		</action>
+	</package>
+
+</struts>
