@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver">
+		</property>
+		<property name="jdbcUrl"
+			value="jdbc:mysql://127.0.0.1:3306/openfunddb?useUnicode=true&amp;characterEncoding=UTF-8">
+		</property>
+		<property name="user" value="root"></property>
+		<property name="password" value="root"></property>
+		<!-- 指定连接数据库连接池的最大连接数 -->
+		<property name="maxPoolSize" value="20" />
+		<!-- 指定连接数据库连接池的最小连接数 -->
+		<property name="minPoolSize" value="1" />
+		<!-- 指定连接数据库连接池的初始化连接数 -->
+		<property name="initialPoolSize" value="1" />
+		<!-- 指定连接数据库连接池的连接的最大空闲时间 -->
+		<property name="maxIdleTime" value="5000" />
+		<property name="maxStatements" value="0" />
+		<!--每60秒检查所有连接池中的空闲连接。Default: 0 -->
+		<property name="idleConnectionTestPeriod" value="60" />
+		<!--定义在从数据库获取新连接失败后重复尝试的次数。Default: 30 -->
+		<property name="acquireRetryAttempts" value="30" />
+		<!--获取连接失败将会引起所有等待连接池来获取连接的线程抛出异常。但是数据源仍有效 保留，并在下次调用getConnection()的时候继续尝试获取连接。如果设为true，那么在尝试 
+			获取连接失败后该数据源将申明已断开并永久关闭。Default: false -->
+		<property name="breakAfterAcquireFailure" value="false" />
+		<!--因性能消耗大请只在需要的时候使用它。如果设为true那么在每个connection提交的 时候都将校验其有效性。建议使用idleConnectionTestPeriod或automaticTestTable 
+			等方法来提升连接测试的性能。Default: false -->
+		<property name="testConnectionOnCheckout" value="false" />
+	</bean>
+	<!-- 配置hibernate的sessionfactory -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.MySQL5Dialect
+				</prop>
+				<prop key="hibernate.max_fetch_depth">2</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+		<property name="annotatedClasses">
+			<!-- 以下用来列出Hibernate的持久化类 -->
+			<list>
+				<value>edu.fzu.ems.domain.Appraise</value>
+				<value>edu.fzu.ems.domain.Class</value>
+				<value>edu.fzu.ems.domain.Course</value>
+				<value>edu.fzu.ems.domain.Institute</value>
+				<value>edu.fzu.ems.domain.Manager</value>
+				<value>edu.fzu.ems.domain.Message</value>
+				<value>edu.fzu.ems.domain.Specialty</value>
+				<value>edu.fzu.ems.domain.Student</value>
+				<value>edu.fzu.ems.domain.StudentCourse</value>
+				<value>edu.fzu.ems.domain.Teacher</value>
+				<value>edu.fzu.ems.domain.TeacherCourse</value>
+				<value>edu.fzu.ems.domain.User</value>
+			</list>
+		</property>
+	</bean>
+</beans>
+	
